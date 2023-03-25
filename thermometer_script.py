@@ -47,7 +47,7 @@ def sensor_graph(filepath, rrd_type):
         #"-S", "300",
         "-w", "1600",
         "-h", "800",
-        "-u", "80",
+        "-u", "60",
         "-l", "20",
         "--allow-shrink",
         #"-g", # No legend
