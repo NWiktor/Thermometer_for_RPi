@@ -1,4 +1,6 @@
 # Pylinter
 _run_pylinter.bat
+database/*
+_run_file_collector.bat
 humi1.png
 temp1.png
