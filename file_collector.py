@@ -40,7 +40,8 @@ def main():
 
 	# Copy and rename files
 	for file in files:
-		filename = f"{DATE}_{file}"
+		# filename = f"{DATE}_{file}"
+		filename = "{0}_{1}".format(DATE, file)
 		shutil.copy2(file, os.path.join(DATABASE_PATH, filename))
 
 
