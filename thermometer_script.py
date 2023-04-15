@@ -6,7 +6,6 @@ save data to RRD and display the values on the segmented display.
 
 # pylint: disable = import-error
 import time
-import os
 import rrdtool
 import board
 from adafruit_ht16k33 import segments
@@ -58,49 +57,64 @@ def sensor_graph(filepath, rrd_type):
         "LINE2:ds01#41CC00") # 40% zöld
 
 
+def read_data():
+    """ Read data from AM2315 sensor using i2C.
+    """
+    thsen = AM2315.AM2315(powerpin=6)
+    humi, temp = thsen.read_humidity_temperature()
+    temperature = f"{temp:3.1f}"
+    humidity = f"{humi:3.1f}"
+
+    # Update RRD and generate charts
+    rrdtool.update("/home/viktor/SDL_Pi_AM2315/temp1.rrd", f"N:{temperature}")
+    rrdtool.update("/home/viktor/SDL_Pi_AM2315/humi1.rrd", f"N:{humidity}")
+    sensor_graph("/home/viktor/SDL_Pi_AM2315/temp1","temp")
+    sensor_graph("/home/viktor/SDL_Pi_AM2315/humi1","humi")
+    return temp, humi
+
+
+def display_data(temp, humi):
+    """ Display sensor data and time on 14 segment, 4 digit display.
+    """
+
+    # Configure immediately before display, otherwise empty display is shown
+    i2c = board.I2C()
+    display = segments.Seg14x4(i2c, address=0x70)
+    display.brightness = 0.5
+
+    display.print("TIME")
+    time.sleep(2)
+    local_time = time.strftime("%H.%M", time.localtime())
+    display.print(local_time)
+    time.sleep(13)
+
+    display.print("TEMP")
+    time.sleep(2)
+    display.print("    ")
+    display.print(f"{temp:>4}")
+    time.sleep(13)
+
+    display.print("TIME")
+    time.sleep(2)
+    local_time = time.strftime("%H.%M", time.localtime())
+    display.print(local_time)
+    time.sleep(13)
+
+    display.print("HUMI")
+    time.sleep(2)
+    display.print("    ")
+    display.print(f"{humi:>4}")
+    # Leave it blank, display stays on after the script ends
+
+
+
 if __name__ == '__main__':
     try:
         # Prepare / read data
-        thsen = AM2315.AM2315(powerpin=6)
-        h, t = thsen.read_humidity_temperature()
-        temperature = f"{t:3.1f}"
-        humidity = f"{h:3.1f}"
-
-        # Update RRD and generate charts
-        rrdtool.update("/home/viktor/SDL_Pi_AM2315/temp1.rrd", f"N:{temperature}")
-        rrdtool.update("/home/viktor/SDL_Pi_AM2315/humi1.rrd", f"N:{humidity}")
-        sensor_graph("/home/viktor/SDL_Pi_AM2315/temp1","temp")
-        sensor_graph("/home/viktor/SDL_Pi_AM2315/humi1","humi")
+        tmp, hmi = read_data()
 
         # Display data on LED-backpack
-        # Configure immediately before display, otherwise empty display is shown
-        i2c = board.I2C()
-        display = segments.Seg14x4(i2c, address=0x70)
-        display.brightness = 0.5
-
-        display.print("TIME")
-        time.sleep(2)
-        local_time = time.strftime("%H.%M", time.localtime())
-        display.print(local_time)
-        time.sleep(13)
-
-        display.print("TEMP")
-        time.sleep(2)
-        display.print("    ")
-        display.print(f"{t:>4}")
-        time.sleep(13)
-
-        display.print("TIME")
-        time.sleep(2)
-        local_time = time.strftime("%H.%M", time.localtime())
-        display.print(local_time)
-        time.sleep(13)
-
-        display.print("HUMI")
-        time.sleep(2)
-        display.print("    ")
-        display.print(f"{h:>4}")
-        # Leave it blank, display stays on after the script ends
+        display_data(tmp, hmi)
 
 
     except KeyboardInterrupt:
