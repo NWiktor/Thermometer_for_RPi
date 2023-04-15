@@ -34,24 +34,36 @@ def main():
         print("No '.png' found!")
         return
 
-    # Create folder
+    # Create main folder
     try:
         os.mkdir(DATABASE_PATH)
-        print("Folder created")
+        print(f"Folder created: {DATABASE_PATH}")
 
     except FileExistsError:
         print("Folder already exists!")
 
     # Copy and rename files
-    try:
-        for file in files:
+    for file in files:
+
+        # Try block for folder creation
+        try:
+            basename = os.path.basename(file).split('.')[0]
+            subdir = os.path.join(DATABASE_PATH, basename)
+            os.mkdir(subdir)
+
+        except FileExistsError:
+            print(f"Folder already exist: {subdir}")
+
+        # Try block for copy
+        try:
             filename = f"{DATE}_{file}"
             src = os.path.join(INITDIR, file)
-            dst = os.path.join(DATABASE_PATH, filename)
+            dst = os.path.join(subdir, filename)
             shutil.copy2(src, dst)
+            print(f"File copied: {filename}")
 
-    except Exception as exc:
-        print(exc)
+        except Exception as exc:
+            print(exc)
 
 
 if __name__ == '__main__':
