@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-#
 
-"""  Short summary
-
-Libs
-----
-
-Help
-----
-
-Info
-----
-Wetzl Viktor - 2023.03.25 - All rights reserved
+""" This script archives the generated .png files to a specific location.  
+Wetzl Viktor - 2023.03.25
 """
 
 import time
