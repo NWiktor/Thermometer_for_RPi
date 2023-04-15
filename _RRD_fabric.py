@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Létrehozza a szenzor adatsorokhoz tartozó RRD adatbázisokat, azok típusától függően.
+import os
 import rrdtool
 import time
 import sys
@@ -29,14 +30,14 @@ def create(filename, rrd_type):
         "RRA:MAX:0.5:1440:366") #Napi max., egy évre
 
     else:
-        file_object=open("/home/viktor/SDL_Pi_AM2315/RRD_log.txt","a")
+        file_object=open(os.path.join(INITDIR, LOG),"a")
         localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         file_object.write(localtime + ": RRD nem hozható létre: ismeretlen típus!" + "\n")
         file_object.close()
         return
 
     # Létrehozás logolva
-    file_object=open("/home/viktor/SDL_Pi_AM2315/RRD_log.txt","a")
+    file_object=open(os.path.join(INITDIR, LOG),"a")
     localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
     file_object.write(localtime + ": Round robin adatbázis (RRD) létrehozva a " + filename + " helyen." + "\n")
     file_object.close()
@@ -47,12 +48,13 @@ def info(filename):
 
 
 if __name__ == "__main__":
-    # Konfigurálandó létrehozás előtt !
+    # Configure before creation!
     sensor1 = "temp1"
     sensor2 = "humi1"
+    LOG = "RRD_log.txt"
 
-    rrd_filename1 = "/home/viktor/SDL_Pi_AM2315/{0}.rrd".format(sensor1)
+    INITDIR = os.path.dirname(__file__)
+    rrd_filename1 = os.path.join(INITDIR, sensor1, ".rrd")
     create(rrd_filename1, "temp")
-
-    rrd_filename2 = "/home/viktor/SDL_Pi_AM2315/{0}.rrd".format(sensor2)
+    rrd_filename2 = os.path.join(INITDIR, sensor2, ".rrd")
     create(rrd_filename2, "humi")

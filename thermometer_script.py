@@ -2,9 +2,11 @@
 
 """ Short and quick script for reading temp and humidity sensor,
 save data to RRD and display the values on the segmented display.
+Wetzl Viktor - 2023.03.25
 """
 
 # pylint: disable = import-error
+import os
 import time
 import rrdtool
 import board
@@ -66,10 +68,11 @@ def read_data():
     humidity = f"{humi:3.1f}"
 
     # Update RRD and generate charts
-    rrdtool.update("/home/viktor/SDL_Pi_AM2315/temp1.rrd", f"N:{temperature}")
-    rrdtool.update("/home/viktor/SDL_Pi_AM2315/humi1.rrd", f"N:{humidity}")
-    sensor_graph("/home/viktor/SDL_Pi_AM2315/temp1","temp")
-    sensor_graph("/home/viktor/SDL_Pi_AM2315/humi1","humi")
+    os.path.join(INITDIR, "temp1.rrd")
+    rrdtool.update(os.path.join(INITDIR, "temp1.rrd"), f"N:{temperature}")
+    rrdtool.update(os.path.join(INITDIR, "humi1.rrd"), f"N:{humidity}")
+    sensor_graph(os.path.join(INITDIR, "temp1"),"temp")
+    sensor_graph(os.path.join(INITDIR, "humi1"),"humi")
     return temp, humi
 
 
@@ -109,6 +112,9 @@ def display_data(temp, humi):
 
 
 if __name__ == '__main__':
+
+    INITDIR = os.path.dirname(__file__)
+
     try:
         # Prepare / read data
         tmp, hmi = read_data()
