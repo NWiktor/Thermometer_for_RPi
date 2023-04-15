@@ -1,12 +1,18 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Létrehozza a szenzor adatsorokhoz tartozó RRD adatbázisokat, azok típusától függően.
+
+""" This script creates an RRD database depending on harcoded types.
+Wetzl Viktor - 2023.03.25
+"""
+
+# pylint: disable = import-error
 import os
-import rrdtool
 import time
-import sys
+import rrdtool
 
 
 def create(filename, rrd_type):
+    """  """
     if rrd_type == "temp":
         # Adott hőmérséklet adatsorhoz.
         # RRD létrehozása, 60 s lépésközzel, azonnali kezdéssel
@@ -30,31 +36,30 @@ def create(filename, rrd_type):
         "RRA:MAX:0.5:1440:366") #Napi max., egy évre
 
     else:
-        file_object=open(os.path.join(INITDIR, LOG),"a")
-        localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-        file_object.write(localtime + ": RRD nem hozható létre: ismeretlen típus!" + "\n")
-        file_object.close()
+        with open(os.path.join(INITDIR, LOG),"a", encoding="utf8") as file_object:
+            localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+            file_object.write(f"{localtime}: RRD nem hozható létre: ismeretlen típus!\n")
         return
 
     # Létrehozás logolva
-    file_object=open(os.path.join(INITDIR, LOG),"a")
-    localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    file_object.write(localtime + ": Round robin adatbázis (RRD) létrehozva a " + filename + " helyen." + "\n")
-    file_object.close()
+    with open(os.path.join(INITDIR, LOG),"a", encoding="utf8") as file_object:
+        localtime = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        file_object.write(f"{localtime}: RRD létrehozva a {filename} helyen.\n")
 
 
 def info(filename):
+    """  """
     print(rrdtool.info(filename))
 
 
 if __name__ == "__main__":
     # Configure before creation!
-    sensor1 = "temp1"
-    sensor2 = "humi1"
+    SENSOR1 = "temp1"
+    SENSOR2 = "humi1"
     LOG = "RRD_log.txt"
 
     INITDIR = os.path.dirname(__file__)
-    rrd_filename1 = os.path.join(INITDIR, sensor1, ".rrd")
+    rrd_filename1 = os.path.join(INITDIR, SENSOR1, ".rrd")
     create(rrd_filename1, "temp")
-    rrd_filename2 = os.path.join(INITDIR, sensor2, ".rrd")
+    rrd_filename2 = os.path.join(INITDIR, SENSOR2, ".rrd")
     create(rrd_filename2, "humi")

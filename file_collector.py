@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-#
+# -*- coding: utf-8 -*-
 
-""" This script archives the generated .png files to a specific location.  
+""" This script archives the generated .png files to a specific location.
 Wetzl Viktor - 2023.03.25
 """
 
